@@ -1,0 +1,10 @@
+<mvchispano-config>
+
+	<action-mappings>
+        	<action path="/index\.php" type="Index">
+			<forward name="success" path="/index.php"/>
+			<forward name="failed" path="/error.php"/>
+		</action>
+	</action-mappings>
+
+</mvchispano-config>
