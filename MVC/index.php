@@ -1,6 +1,5 @@
 <?php
 
-header('Content-Type: text/plain'); // For debug
 error_reporting(E_ALL);
 
 require_once 'lib/class.actionservlet.php';
