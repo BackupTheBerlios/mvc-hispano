@@ -80,7 +80,7 @@ class XMLNode {
   }
 
   function &getElementsByName($name) {
-    $node = array();
+    $nodes = array();
     $this->getChilds($name, $this, $nodes);
     return $nodes;
   }

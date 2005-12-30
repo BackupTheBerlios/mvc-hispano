@@ -9,15 +9,15 @@ class Config {
   }
 
   function &findAction($path) {
-    $maps = $this->root->getElementsByName('action-mappings');
+    $maps = &$this->root->getElementsByName('action-mappings');
     if (count($maps) === 0) return null;
 
-    $actions = $maps[0]->getElementsByName('action');
+    $actions = &$maps[0]->getElementsByName('action');
     $len = count($actions);
 
     for ($i=0; $i<$len; $i++) {
       $action = &$actions[$i];
-      $actionpath = $action->getAttribute('path');
+      $actionpath = &$action->getAttribute('path');
       if ($actionpath === null) continue;
       $actionpath = str_replace('#', '\#', $actionpath);
       if (preg_match('#^'.$actionpath.'$#', $path)) // Comprobamos que sea el action bueno
@@ -26,6 +26,9 @@ class Config {
     return null;
   }
 
+  function &findForwards($action) {
+    return $action->getElementsByName('forward');
+  }
 }
 
 ?>
