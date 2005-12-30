@@ -17,7 +17,7 @@ class Config {
 
     for ($i=0; $i<$len; $i++) {
       $action = &$actions[$i];
-      $actionpath = &$action->getAttribute('path');
+      $actionpath = $action->getAttribute('path');
       if ($actionpath === null) continue;
       $actionpath = str_replace('#', '\#', $actionpath);
       if (preg_match('#^'.$actionpath.'$#', $path)) // Comprobamos que sea el action bueno

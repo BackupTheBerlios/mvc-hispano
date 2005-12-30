@@ -13,18 +13,19 @@ class ActionServlet {
   }
 
   function process(&$request, &$reponse) {
-    $path = &$request->getPath();
+    $path = $request->getPath();
 
     $action = &$this->config->findAction($path);
     if ($action === null) return false;
 
-    $type = &$action->getAttribute('type');
+    $type = $action->getAttribute('type');
     if ($type === null) return false;
 
     do {
 
       if (strpos($type, 'action.') === 0) {
-        $type = &$this->processAction(substr($type,7), new ActionMapping($this->config->findForwards($action)), $request, $reponse);
+        $mapping = new ActionMapping($this->config->findForwards($action));
+        $type = $this->processAction(substr($type,7), $mapping, $request, $reponse);
       } else {
         $this->processView($type, $request, $reponse);
         $type = null;
@@ -34,18 +35,18 @@ class ActionServlet {
     return true;
   }
 
-  function processAction(&$type, &$mapping, &$request, &$reponse) {
+  function processAction($type, &$mapping, &$request, &$reponse) {
 
     if (!(require_once ('actions/action.'.$type.'.php'))) die ('No se pudo cargar el Action');
     $class = $type.'Action';
     if (!class_exists($class)) die ("No se encuentra la clase ".$type."Action");
 
     $exec = &new $class();
-    $forward = &$exec->execute($mapping , null, $request, $reponse);
+    $forward = $exec->execute($mapping , null, $request, $reponse);
     return is_a($forward, 'XMLNode') ? $forward->getAttribute('path') : null;
   }
 
-  function processView(&$type, &$request, &$reponse) {
+  function processView($type, &$request, &$reponse) {
     $file = 'views/'.$type;
     if (!is_file($file)) die ('No existe el fichero '.$file);
 

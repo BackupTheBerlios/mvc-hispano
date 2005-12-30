@@ -9,7 +9,7 @@ class XMLParser {
 
   function XMLParser($file, $encoding='ISO-8859-1') {
     $this->file = &$file;
-    $this->parser = &xml_parser_create($encoding);
+    $this->parser = xml_parser_create($encoding);
     $this->root = &new XMLNode('Root', $this);
     $this->current = &$this->root;
   }
@@ -44,15 +44,6 @@ class XMLParser {
     $this->current->content .= $data;
     return;
   }
-
-  function printTree(&$node, $d=0) {
-    for ($i=0; $i<$d; $i++) echo "\t";
-    $att = '';
-    foreach ($node->attributes as $key => &$value) $att .= ' '.$key.'="'.$value.'"';
-    echo $node->name, $att,"\n";
-    foreach ($node->childs as &$child)
-      $this->printTree($child, $d+1);
-  }
 }
 
 class XMLNode {
@@ -62,7 +53,7 @@ class XMLNode {
   var $parent;
   var $childs;
 
-  function XMLNode($name, &$parent, &$attributes=array(), &$content='') {
+  function XMLNode($name, &$parent, $attributes=array(), $content='') {
     $this->name = &$name;
     $this->parent = &$parent;
     $this->attributes = &$attributes;
@@ -74,7 +65,7 @@ class XMLNode {
     $this->childs[] = &$child;
   }
 
-  function &getAttribute($attribute) {
+  function getAttribute($attribute) {
     $value = $this->attributes[strtoupper($attribute)];
     return isset($value) ? $value : null;
   }
