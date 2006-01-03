@@ -1,5 +1,14 @@
 <mvchispano-config>
 
+	<rewrite-rules>
+	<!--
+	Put here the rules for rewrite the url, example:
+
+	<rule pattern="/" path="welcome.php" />
+	<rule pattern="/(\w+)\.html" path="$1.php" />
+	-->
+	</rewrite-rules>
+
 	<action-mappings>
 	<!--
 	Put here the actions an his forwards, example:
