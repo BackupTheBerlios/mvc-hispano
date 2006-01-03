@@ -29,6 +29,12 @@ class Config {
   function &findForwards($action) {
     return $action->getElementsByName('forward');
   }
+
+  function &findRewriteRules() {
+    $rules = &$this->root->getElementsByName('rewrite-rules');
+    return count($rules) === 0 ? null : $rules[0]->getElementsByName('rule');
+    
+  }
 }
 
 ?>

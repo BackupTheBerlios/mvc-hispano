@@ -6,16 +6,20 @@ require_once 'lib/class.session.php';
 // Estuve probandolos y creo que lo hace bien...
 class Request {
 
-  var $method;
   var $session;
+  var $baseUrl;
+  var $basePath;
+  var $path;
 
   function Request() {
-    $this->method = &$_SERVER['REQUEST_METHOD'];
-    $this->session =& new Session();
+    $this->session = &new Session();
+    $this->basePath = substr($_SERVER['PHP_SELF'], 0, -11); // Quitamos el lib/run.php
+    $this->baseUrl = 'http://'.$_SERVER['HTTP_HOST'].$this->basePath;
+    $this->path = substr($_SERVER['REQUEST_URI'], strlen($this->basePath)-1);
   }
 
   function getMethod() {
-    return $this->method;
+    return $_SERVER['REQUEST_METHOD'];
   }
 
   function getHeaders() {
@@ -37,31 +41,16 @@ class Request {
     return $this->session;
   }
 
-  function getContextPath() {
-    return substr($_SERVER['PHP_SELF'], 0, strrpos($_SERVER['PHP_SELF'], '/'));
+  function getBaseUrl() {
+    return $this->baseUrl;
   }
 
-  function getQueryString() {
-    return $_SERVER['QUERY_STRING'];
-  }
-
-  function getRequestURI() {
-    if (!empty($_SERVER['QUERY_STRING']))
-      return substr($_SERVER['REQUEST_URI'], 0, -(strlen($_SERVER['QUERY_STRING'])+1));
-    else
-      return $_SERVER['REQUEST_URI'];
-  }
-
-  function getRequestURL() {
-    return 'http://'.$_SERVER['HTTP_HOST'].$this->getRequestURI();
-  }
-
-  function getScriptPath() {
-    return substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/'));
+  function getBasePath() {
+    return $this->basePath;
   }
 
   function getPath() {
-    return substr($this->getRequestURI(), strlen($this->getContextPath()));
+    return $this->path;
   }
 
 }
