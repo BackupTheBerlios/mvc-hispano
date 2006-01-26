@@ -11,15 +11,20 @@ class Request {
   var $basePath;
   var $path;
 
+  var $attributes;
+
   function Request() {
     $this->session = &new Session();
     $this->basePath = substr($_SERVER['PHP_SELF'], 0, -11); // Quitamos el lib/run.php
     $this->baseUrl = 'http://'.$_SERVER['HTTP_HOST'].$this->basePath;
-    $this->path = substr($_SERVER['REQUEST_URI'], strlen($this->basePath)-1);
+    $this->path = substr($_SERVER['REQUEST_URI'], strlen($this->basePath));
+
+    if ($this->getMethod() === 'GET') $this->attributes = &$_GET;
+    else $this->attributes = &$_POST;
   }
 
   function getMethod() {
-    return $_SERVER['REQUEST_METHOD'];
+    return strtoupper($_SERVER['REQUEST_METHOD']);
   }
 
   function getHeaders() {
@@ -51,6 +56,17 @@ class Request {
 
   function getPath() {
     return $this->path;
+  }
+
+  function get($att, $default=null) {
+    $aux = &$this->attributes[$att];
+    return isset($aux) ? aux : $default;
+  }
+
+  function set($att, $value) {
+    $aux = getAttribute($att);
+    $this->attributes[$att] = $value;
+    return $aux;
   }
 
 }

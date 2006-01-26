@@ -1,18 +1,21 @@
 <?php
 
-error_reporting(E_ALL);
-
 chdir('..');
 
 require_once 'lib/class.actionservlet.php';
 require_once 'lib/class.request.php';
+require_once 'lib/class.response.php';
 
 $request = &new Request();
-$repose = null;
+$response = &new Response();
 
 $servlet = &new ActionServlet();
 $servlet->init();
-$servlet->process($request, $reponse);
+$success = $servlet->process($request, $response);
 $servlet->destroy();
+
+if (!$success) {
+  $response->sendError(404);
+}
 
 ?>

@@ -13,8 +13,10 @@ class ActionServlet {
     $this->loadConfig();
   }
 
-  function process(&$request, &$reponse) {
-    $this->applyRewriteRules($request);
+  function process(&$request, &$response) {
+    if ($this->config === null || !$this->applyRewriteRules($request))
+      $response->sendError(500);
+
     $path = $request->getPath();
 
     do {
@@ -26,9 +28,9 @@ class ActionServlet {
         if ($type === null) return false;
 
         $mapping = &new ActionMapping($this->config->findForwards($action));
-        $path = $this->processAction($type, $mapping, $request, $reponse);
+        $path = $this->processAction($type, $mapping, $request, $response);
       } else {
-        $path = $this->processView($path, $request, $reponse);
+        $path = $this->processView($path, $request, $response);
       }
     } while ($path !== null);
 
@@ -43,33 +45,41 @@ class ActionServlet {
     for ($i=0; $i<$len; $i++) {
       $pattern = &$rules[$i]->getAttribute('pattern');
       $path = &$rules[$i]->getAttribute('path');
-      if (empty($pattern) || empty($path)) continue;
+      if (is_null($pattern) || is_null($path)) return false;
 
       $pattern = str_replace('#', '\#', $pattern);
-      $request->path = preg_replace('#^'.$pattern.'$#', $path, $request->path);
-      if ($request->path !== $aux) return;
+      $request->path = @preg_replace('#^'.$pattern.'$#', $path, $request->path);
+
+      if ($request->path === null) return false;
+      if ($request->path !== $aux) break;
     }
+
+    if (($pos = strpos($request->path, '?')) !== false) {
+      parse_str(substr($request->path, $pos+1), $_GET);
+      $request->path = substr($request->path, 0, $pos);
+    }
+    return true;
   }
 
-  function processAction($type, &$mapping, &$request, &$reponse) {
+  function processAction($type, &$mapping, &$request, &$response) {
     if (!(require_once ('actions/action.'.$type.'.php'))) die ('No se pudo cargar el Action');
     $class = ucfirst(strtolower($type)).'Action';
     if (!class_exists($class)) die ("No se encuentra la clase ".$class);
 
     $exec = &new $class();
-    $forward = $exec->execute($mapping, null, $request, $reponse);
+    $forward = $exec->execute($mapping, null, $request, $response);
     return is_a($forward, 'XMLNode') ? $forward->getAttribute('path') : null;
   }
 
-  function processView($path, &$request, &$reponse) {
+  function processView($path, &$request, &$response) {
     if (!is_file($path)) die ('No existe el fichero '.$file);
 
     ob_start();
     include $path;
-    $content = ob_get_contents();
-    ob_end_clean();
+//    $content = ob_get_contents();
+    ob_end_flush();
 
-    echo $content;
+//    echo $content;
     return null;
   }
 
@@ -79,8 +89,8 @@ class ActionServlet {
 
   function loadConfig() {
     $parser = &new XMLParser('etc/config.xml');
-    $parser->parse();
-    $this->config = &new Config($parser->root->childs[0]);
+    if ($parser->parse()) $this->config = &new Config($parser->root->childs[0]);
+    else $this->config = null;
     unset($parser);
   }
 

@@ -4,8 +4,8 @@
 	<!--
 	Put here the rules for rewrite the url, example:
 
-	<rule pattern="/" path="welcome.php" />
-	<rule pattern="/(\w+)\.html" path="$1.php" />
+		<rule pattern="/" path="welcome.php" />
+		<rule pattern="/(\w+)\.html" path="$1.php" />
 	-->
 	</rewrite-rules>
 
@@ -14,7 +14,7 @@
 	Put here the actions an his forwards, example:
 
 	<action path="/" type="welcome.html" />
-	<action path="/checkData" type="action.CheckData">
+	<action path="/checkData" type="CheckData">
 		<forward name="success" path="valid.html"/>
 		<forward name="failed" path="novalid.html"/>
 	</action>

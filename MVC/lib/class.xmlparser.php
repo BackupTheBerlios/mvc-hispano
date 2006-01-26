@@ -19,15 +19,7 @@ class XMLParser {
     xml_set_element_handler($this->parser, "startElement", "endElement");
     xml_set_character_data_handler($this->parser, "characterData");
 
-    if (!xml_parse($this->parser, file_get_contents($this->file), true)) {
-      $err = array();
-      $err['code'] = xml_get_error_code($this->parser);
-      $err['string'] = xml_error_string($this->parser);
-      $err['line'] = xml_get_current_line_number($this->parser);
-      $err['col'] = xml_get_current_column_number($this->parser);
-      print_r($err);
-    }
-
+    return (bool)xml_parse($this->parser, file_get_contents($this->file), true);
   }
 
   function startElement(&$parser, &$name, &$attributes) {
